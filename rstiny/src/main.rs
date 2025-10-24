@@ -37,6 +37,18 @@ pub fn rust_main(cpu_id: usize, arg: usize) -> ! {
     axplat::power::system_off()
 }
 
+#[unsafe(no_mangle)]
+pub extern "C" fn __axplat_secondary_main(cpu_id: usize) -> ! {
+    axplat::init::init_early(cpu_id, 0);
+    axplat::init::init_later(cpu_id, 0);
+
+    axplat::console_println!("Secondary CPU {} started", cpu_id);
+
+    loop {
+        core::hint::spin_loop();
+    }
+}
+
 #[cfg(all(target_os = "none", not(test)))]
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
