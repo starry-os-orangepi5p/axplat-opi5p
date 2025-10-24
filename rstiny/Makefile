@@ -8,6 +8,7 @@ TOOL_PATH = ../tools/orangepi5
 kernel_elf = ../target/$(TARGET)/$(MODE)/$(PROJECT_NAME)
 kernel_bin = $(kernel_elf).bin
 kernel_img = $(kernel_elf).img
+kernel_uimg = $(kernel_elf).uimg
 kernel_asm = $(kernel_elf)_asm.txt
 
 ifeq ($(MODE), release)
@@ -32,11 +33,22 @@ build:
 	@echo "Dump $(kernel_asm)"
 	@rust-objdump -d --print-imm-hex $(kernel_elf) > $(kernel_asm)
 
+uimage: build
+	@echo "Creating uImage for $(PROJECT_NAME)..."
+	mkimage -A arm64 -O linux -T kernel -C none -a 0x400000 -e 0x400000 \
+		-n "RSTiny" -d $(kernel_bin) $(kernel_uimg)
+	@echo "uImage created: $(kernel_uimg)"
+
+boot: uimage
+	@echo "Creating boot image for $(PROJECT_NAME)..."
+	sudo bash $(TOOL_PATH)/make_boot.sh $(kernel_uimg) $(kernel_img)
+
 img: build
 	@echo "Make $(PROJECT_NAME) on Orange Pi 5..."
-	sudo bash $(TOOL_PATH)/make_disk.sh $(kernel_img) $(kernel_bin) 
+	sudo bash $(TOOL_PATH)/make_disk.sh $(kernel_img) $(kernel_bin)
 
 $(kernel_img): img
+$(kernel_uimg): uimage
 
 flash: $(kernel_img)
 	@echo "Flash $(PROJECT_NAME) to Orange Pi 5..."

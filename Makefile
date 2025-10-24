@@ -27,13 +27,19 @@ clean:
 build:
 	@$(MAKE) -C $(APP) build
 
+uimage: build
+	@$(MAKE) -C $(APP) uimage
+
+boot: uimage
+	@$(MAKE) -C $(APP) boot
+
 img: build
 	@$(MAKE) -C $(APP) img
 
-flash: 
+flash:
 	@$(MAKE) -C $(APP) flash
 
 upload:
 	@$(MAKE) -C $(APP) upload
 
-.PHONY: build flash upload clean
+.PHONY: build uimage boot flash upload clean
