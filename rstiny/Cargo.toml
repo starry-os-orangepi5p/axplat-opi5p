@@ -10,4 +10,5 @@ talc = "4.4.3"
 axplat-aarch64-opi5p = { workspace = true,features = ["irq", "smp"] }
 axplat = "0.2.0"
 spin = "0.10.0"
+gpio_rk3588 = { path = "../../../drivers/gpio_rk3588" }
 

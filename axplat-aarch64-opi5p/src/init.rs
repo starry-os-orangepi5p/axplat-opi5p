@@ -37,6 +37,9 @@ impl InitIf for InitIfImpl {
     /// initialization (e.g, logging, memory management), and finalized the rest of
     /// platform configuration and initialization.
     fn init_later(_cpu_id: usize, _dtb: usize) {
+        // Initialize GPIO controller
+        crate::gpio::init();
+
         #[cfg(feature = "irq")]
         {
             use crate::mem::phys_to_virt;

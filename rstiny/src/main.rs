@@ -34,6 +34,9 @@ pub fn rust_main(cpu_id: usize, arg: usize) -> ! {
 
     test::run_allocator_tests();
 
+    // Run GPIO/LED tests
+    test::run_all_gpio_tests();
+
     axplat::power::system_off()
 }
 

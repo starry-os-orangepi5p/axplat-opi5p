@@ -27,6 +27,9 @@ mod mem;
 #[cfg(feature = "smp")]
 mod mp;
 mod power;
+pub mod gpio;
+
+pub use gpio::{gpio_controller, GpioController};
 
 axplat_aarch64_peripherals::time_if_impl!(TimeIfImpl);
 
