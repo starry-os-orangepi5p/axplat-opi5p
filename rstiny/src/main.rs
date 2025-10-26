@@ -37,6 +37,13 @@ pub fn rust_main(cpu_id: usize, arg: usize) -> ! {
     // Run GPIO/LED tests
     test::run_all_gpio_tests();
 
+    // Run GICv3 driver tests
+    test::run_all_gicv3_tests();
+
+    // Run GICv3 hardware integration test (requires actual hardware)
+    // Uncomment to test with real hardware:
+    // test::run_gicv3_hardware_test();
+
     axplat::power::system_off()
 }
 
