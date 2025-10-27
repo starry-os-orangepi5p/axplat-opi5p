@@ -44,6 +44,10 @@ pub fn rust_main(cpu_id: usize, arg: usize) -> ! {
     // Uncomment to test with real hardware:
     // test::run_gicv3_hardware_test();
 
+    // Run Timer tests - blink blue LED every 1 second
+    info!("Starting timer tests...");
+    test::timer_blink_demo();
+
     axplat::power::system_off()
 }
 

@@ -11,4 +11,6 @@ axplat-aarch64-opi5p = { workspace = true,features = ["irq", "smp"] }
 axplat = "0.2.0"
 spin = "0.10.0"
 gpio_rk3588 = { path = "../../gpio_rk3588" }
+arm-gicv3 = { path = "../../gic_v3" }
+timer_rk3588 = { path = "../../timer_rk3588" }
 
