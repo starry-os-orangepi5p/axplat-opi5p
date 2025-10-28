@@ -16,7 +16,7 @@ fn delay_ms(ms: usize) {
 pub fn simple_power_off() {
     let pmu = RK3588Pmu::new(PMU_BASE_ADDR);
 
-    println!("Powering off peripheral domains...");
+    info!("Powering off peripheral domains...");
 
     // Power off safe domains
     let domains = [
@@ -25,12 +25,12 @@ pub fn simple_power_off() {
 
     for domain in &domains {
         match pmu.power_off(*domain) {
-            Ok(()) => println!("  ✓ {:?} powered off", domain),
-            Err(e) => println!("  ✗ {:?} failed: {:?}", domain, e),
+            Ok(()) => info!("  ✓ {:?} powered off", domain),
+            Err(e) => info!("  ✗ {:?} failed: {:?}", domain, e),
         }
     }
 
-    println!("\nSystem shutdown...");
+    info!("\nSystem shutdown...");
     // axplat::power::system_off();
 }
 
