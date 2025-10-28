@@ -49,21 +49,29 @@ pub fn rust_main(cpu_id: usize, arg: usize) -> ! {
     test::timer_blink_demo();
 
     // Run PMU tests
+    info!("Starting PMU power-off tests...");
     // Choose one of the following test options:
 
     // Option 1: Run all PMU tests (comprehensive)
     // test::run_all_pmu_tests();
 
     // Option 2: Run focused power-off tests (recommended)
-    info!("Starting PMU power-off tests...");
     // test::run_all_power_off_tests();
-    test::simple_power_off();
+    // test::simple_power_off(); // XXX: can't verify
 
     // Option 3: Quick power-off demo (fastest)
     // test::quick_power_off_demo();
 
     // Option 4: System power-off test (WARNING: Powers off the system!)
     // test::test_system_power_off();
+
+    // Option 5: CRU reboot tests (WARNING: Will reboot the system!)
+    // Uncomment ONE of the following to test system reboot:
+
+    // test::demo_cru_reboot_info();           // Safe: Only displays info, doesn't reboot
+    test::test_cru_reboot_first_level();    // WARNING: Reboots with thorough reset
+    // test::test_cru_reboot_second_level();   // WARNING: Reboots preserving GRFs/GPIOs
+    // test::test_cru_reboot_with_threshold(); // WARNING: Reboots with custom threshold
 
     // Normal system shutdown
     axplat::power::system_off()

@@ -380,3 +380,158 @@ const SAFE_TEST_DOMAINS: &[PowerDomain] = &[
     PowerDomain::AUDIO,
     PowerDomain::SDMMC,
 ];
+
+/// Test CRU-based system reboot functionality
+pub fn test_cru_reboot_first_level() {
+    use pmu_rk3588::{CRU_BASE_ADDR, RebootLevel};
+
+    info!("\n");
+    info!("╔══════════════════════════════════════════════════════╗");
+    info!("║         CRU System Reboot Test (First Level)        ║");
+    info!("╚══════════════════════════════════════════════════════╝");
+    info!("");
+
+    let pmu = init_pmu();
+
+    info!("Testing CRU-based system reboot...");
+    info!("Reboot Level: First (Thorough Reset)");
+    info!("This will reset almost all logic except hardware-reset-only registers");
+    info!("");
+
+    warn!("!!! WARNING: System will reboot in 3 seconds !!!");
+    delay(10_000_000);
+    warn!("3...");
+    delay(10_000_000);
+    warn!("2...");
+    delay(10_000_000);
+    warn!("1...");
+    delay(10_000_000);
+
+    info!("Triggering system reboot now...");
+
+    // SAFETY: This will trigger a system reboot
+    unsafe {
+        pmu.reboot_via_cru(CRU_BASE_ADDR, RebootLevel::First, None);
+    }
+
+    // Should never reach here
+    error!("ERROR: Reboot failed!");
+}
+
+/// Test CRU-based system reboot with second level (state-preserving)
+pub fn test_cru_reboot_second_level() {
+    use pmu_rk3588::{CRU_BASE_ADDR, RebootLevel};
+
+    info!("\n");
+    info!("╔══════════════════════════════════════════════════════╗");
+    info!("║        CRU System Reboot Test (Second Level)        ║");
+    info!("╚══════════════════════════════════════════════════════╝");
+    info!("");
+
+    let pmu = init_pmu();
+
+    info!("Testing CRU-based system reboot...");
+    info!("Reboot Level: Second (State-Preserving Reset)");
+    info!("This will reset almost all logic but preserve GRFs and GPIOs state");
+    info!("");
+
+    warn!("!!! WARNING: System will reboot in 3 seconds !!!");
+    delay(10_000_000);
+    warn!("3...");
+    delay(10_000_000);
+    warn!("2...");
+    delay(10_000_000);
+    warn!("1...");
+    delay(10_000_000);
+
+    info!("Triggering system reboot now...");
+
+    // SAFETY: This will trigger a system reboot
+    unsafe {
+        pmu.reboot_via_cru(CRU_BASE_ADDR, RebootLevel::Second, None);
+    }
+
+    // Should never reach here
+    error!("ERROR: Reboot failed!");
+}
+
+/// Test CRU reboot with custom reset counter threshold
+pub fn test_cru_reboot_with_threshold() {
+    use pmu_rk3588::{CRU_BASE_ADDR, RebootLevel};
+
+    info!("\n");
+    info!("╔══════════════════════════════════════════════════════╗");
+    info!("║      CRU System Reboot Test (Custom Threshold)      ║");
+    info!("╚══════════════════════════════════════════════════════╝");
+    info!("");
+
+    let pmu = init_pmu();
+
+    // Set reset counter threshold to 500 OSC cycles
+    let threshold = 500u32;
+
+    info!("Testing CRU-based system reboot with custom threshold...");
+    info!("Reboot Level: First (Thorough Reset)");
+    info!("Reset Counter Threshold: {} OSC cycles", threshold);
+    info!("");
+
+    warn!("!!! WARNING: System will reboot in 3 seconds !!!");
+    delay(10_000_000);
+    warn!("3...");
+    delay(10_000_000);
+    warn!("2...");
+    delay(10_000_000);
+    warn!("1...");
+    delay(10_000_000);
+
+    info!("Triggering system reboot now...");
+
+    // SAFETY: This will trigger a system reboot
+    unsafe {
+        pmu.reboot_via_cru(CRU_BASE_ADDR, RebootLevel::First, Some(threshold));
+    }
+
+    // Should never reach here
+    error!("ERROR: Reboot failed!");
+}
+
+/// Quick demo of CRU reboot functionality (displays info only, doesn't actually reboot)
+pub fn demo_cru_reboot_info() {
+    use pmu_rk3588::{CRU_BASE_ADDR, RebootLevel};
+
+    info!("\n");
+    info!("╔══════════════════════════════════════════════════════╗");
+    info!("║         CRU System Reboot Information Demo          ║");
+    info!("╚══════════════════════════════════════════════════════╝");
+    info!("");
+
+    info!("CRU Base Address: 0x{:08X}", CRU_BASE_ADDR);
+    info!("");
+    info!("Available Reboot Levels:");
+    info!("  1. First Level (RebootLevel::First)");
+    info!("     - Thorough reset");
+    info!("     - Resets almost all logic");
+    info!("     - Only preserves hardware-reset-only registers");
+    info!("");
+    info!("  2. Second Level (RebootLevel::Second)");
+    info!("     - State-preserving reset");
+    info!("     - Resets almost all logic");
+    info!("     - Preserves GRFs and GPIOs state");
+    info!("");
+    info!("Reset Counter Threshold:");
+    info!("  - Configurable from 0 to 1023 OSC clock cycles");
+    info!("  - Defines the assertion time for global software reset");
+    info!("  - Maximum duration: ~1ms");
+    info!("");
+    info!("Hardware Features:");
+    info!("  - Self-de-asserting reset mechanism");
+    info!("  - Magic value protection (0xfdb9 for Level 1, 0xeca8 for Level 2)");
+    info!("  - Immediate effect upon register write");
+    info!("");
+    info!("Usage Example:");
+    info!("  unsafe {{");
+    info!("    pmu.reboot_via_cru(CRU_BASE_ADDR, RebootLevel::First, None);");
+    info!("  }}");
+    info!("");
+    info!("Demo completed (system not rebooted)\n");
+}
