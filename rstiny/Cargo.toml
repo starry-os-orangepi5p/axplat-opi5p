@@ -13,4 +13,5 @@ spin = "0.10.0"
 gpio_rk3588 = { path = "../../gpio_rk3588" }
 arm-gicv3 = { path = "../../gic_v3" }
 timer_rk3588 = { path = "../../timer_rk3588" }
+pmu_rk3588 = { path = "../../pmu_rk3588" }
 

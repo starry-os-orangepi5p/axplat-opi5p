@@ -48,6 +48,24 @@ pub fn rust_main(cpu_id: usize, arg: usize) -> ! {
     info!("Starting timer tests...");
     test::timer_blink_demo();
 
+    // Run PMU tests
+    // Choose one of the following test options:
+
+    // Option 1: Run all PMU tests (comprehensive)
+    // test::run_all_pmu_tests();
+
+    // Option 2: Run focused power-off tests (recommended)
+    info!("Starting PMU power-off tests...");
+    // test::run_all_power_off_tests();
+    test::simple_power_off();
+
+    // Option 3: Quick power-off demo (fastest)
+    // test::quick_power_off_demo();
+
+    // Option 4: System power-off test (WARNING: Powers off the system!)
+    // test::test_system_power_off();
+
+    // Normal system shutdown
     axplat::power::system_off()
 }
 

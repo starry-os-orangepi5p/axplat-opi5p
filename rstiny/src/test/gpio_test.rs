@@ -137,3 +137,101 @@ pub fn led_blink_demo() {
     gpio.set_output(GPIO3_BANK, BLUE_LED_PIN, Level::Low);
     info!("LED blink demo completed");
 }
+
+/// Test case: Power off LED (turn off and verify)
+///
+/// This test demonstrates how to properly power off an LED:
+/// 1. Check initial LED state (read GPIO pin)
+/// 2. Turn LED off (set to LOW)
+/// 3. Verify LED is off
+/// 4. Confirm final state
+pub fn test_power_off_led() {
+    info!("\n");
+    info!("╔══════════════════════════════════════════════════════╗");
+    info!("║         LED Power-Off Test                          ║");
+    info!("╚══════════════════════════════════════════════════════╝");
+    info!("");
+
+    let gpio = gpio_controller();
+
+    // Test both LEDs
+    let leds = [
+        ("Blue LED (GPIO3.6)", BLUE_LED_PIN),
+        ("Green LED (GPIO3.9)", GREEN_LED_PIN),
+    ];
+
+    for (name, pin) in leds.iter() {
+        info!("Testing: {}", name);
+        info!("─────────────────────────────────────────────────────");
+
+        // Step 1: Turn LED ON first (to ensure we can see the power-off)
+        info!("  Step 1: Turn LED ON");
+        gpio.set_output(GPIO3_BANK, *pin, Level::High);
+        delay(2_000_000);
+        info!("    ✓ LED is ON (should be visible)");
+
+        // Step 2: Power off the LED
+        info!("  Step 2: Power OFF LED");
+        gpio.set_output(GPIO3_BANK, *pin, Level::Low);
+        delay(500_000);
+
+        // Step 3: Read back the state
+        info!("  Step 3: Verify LED state");
+        let state = gpio.get_input(GPIO3_BANK, *pin);
+
+        if state == Level::Low {
+            info!("    ✓ SUCCESS: LED is OFF (verified)");
+        } else {
+            warn!("    ✗ WARNING: LED appears to be ON");
+        }
+
+        // Step 4: Confirm it stays off
+        delay(1_000_000);
+        let final_state = gpio.get_input(GPIO3_BANK, *pin);
+
+        if final_state == Level::Low {
+            info!("    ✓ CONFIRMED: LED remains OFF");
+        } else {
+            warn!("    ✗ WARNING: LED state changed unexpectedly");
+        }
+
+        info!("");
+    }
+
+    info!("╔══════════════════════════════════════════════════════╗");
+    info!("║         LED Power-Off Test Completed                ║");
+    info!("╚══════════════════════════════════════════════════════╝");
+    info!("\n");
+}
+
+/// Quick LED power-off demo - just turns off both LEDs
+pub fn quick_led_power_off() {
+    info!("=== Quick LED Power-Off Demo ===");
+
+    let gpio = gpio_controller();
+
+    // Turn off blue LED
+    info!("Powering off Blue LED...");
+    gpio.set_output(GPIO3_BANK, BLUE_LED_PIN, Level::Low);
+    info!("  ✓ Blue LED OFF");
+
+    delay(500_000);
+
+    // Turn off green LED
+    info!("Powering off Green LED...");
+    gpio.set_output(GPIO3_BANK, GREEN_LED_PIN, Level::Low);
+    info!("  ✓ Green LED OFF");
+
+    info!("All LEDs powered off\n");
+}
+
+/// Power off all LEDs (cleanup function)
+pub fn power_off_all_leds() {
+    let gpio = gpio_controller();
+
+    // Ensure both LEDs are off
+    gpio.set_output(GPIO3_BANK, BLUE_LED_PIN, Level::Low);
+    gpio.set_output(GPIO3_BANK, GREEN_LED_PIN, Level::Low);
+
+    info!("All LEDs powered off (cleanup complete)");
+}
